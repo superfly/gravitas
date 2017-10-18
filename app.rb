@@ -5,28 +5,22 @@ require 'base64'
 require 'faraday'
 
 default_key = ENV['GRAVITAS_KEY']
+pad_pattern = /^([a-zA-Z0-9]+:)/
 get '/:data' do
   key = request.env['HTTP_GRAVITAS_KEY']
   key = default_key if key.nil? || key == ""
-  key = begin
-          Base64.urlsafe_decode64(key)
-        rescue
-          halt(400, "Invalid key")
-        end
-
-  box = RbNaCl::SimpleBox.from_secret_key(key)
 
   data = params[:data]
-  puts params.inspect
   data = begin
            Base64.urlsafe_decode64(data)
          rescue
            halt(404, "Not found: #{data}")
          end
-  gravatar_path = box.decrypt(data)
 
-  gravatar = "https://www.graatar.com/avatar#{gravatar_path}"
-  logger.debug "GET: #{gravatar_path}"
+  gravatar_path = secure_box(key).decrypt(data)
+
+  gravatar = "https://www.gravatar.com/avatar#{gravatar_path}"
+  puts "GET: #{gravatar_path}"
 
   resp = begin
            Faraday.get(gravatar)
@@ -42,7 +36,7 @@ get '/:data' do
     end
 
     if /[a-f0-9]{32}/.match(v)
-      # this header leaks md5s
+      # this header probably has md5s
       logger.debug "(nuking leaky header) #{k}: #{v}"
       v = nil
     end
@@ -53,5 +47,31 @@ get '/:data' do
   response.write(resp.body)
 end
 
-post '/' do
+post '/avatar/:md5' do
+  key = request.env["HTTP_AUTHORIZATION"]
+  vkey = request.env["HTTP_GRAVITAS_KEY"]
+  vkey = default_key if vkey.nil? || vkey == ""
+
+  if key != vkey
+    halt(401, 'Unauthorized')
+  end
+
+  path = params[:md5]
+  if request.query_string != ""
+    path = path + "?" + request.query_string
+  end
+
+  box = secure_box(key)
+
+  Base64.urlsafe_encode64(box.encrypt(path)).sub(/=+$/, '')
+end
+
+def secure_box(key)
+  key = begin
+          Base64.urlsafe_decode64(key)
+        rescue
+          halt(400, "Invalid key")
+        end
+
+  RbNaCl::SimpleBox.from_secret_key(key)
 end
