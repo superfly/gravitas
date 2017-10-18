@@ -43,6 +43,6 @@ curl -X POST -d '' -H 'Authorization: <key>' http://localhost:4567/avatar/767fc9
 
 ### Caveats
 
-* We don't obfuscate users' actual the images we return. If a user has a unique gravatar, you can still find all the places they use it with a reverse image search.
+* We don't obfuscate users' actual images that we return. If a user has a unique gravatar, you can still find all the places they use it with a reverse image search.
 * This hides a lot from the backend gravatar servers, but they can still determine that requests are happening for a given email.
-* Getting the encrypted parameter from a webservice is relatively expensive. You should probably store a fully "avatar url" in your own database, rather than trying to use the `POST` API in realtime.
+* Getting the encrypted parameter from a webservice is relatively expensive. You should probably store a full "avatar url" in your own database, rather than trying to use the `POST` API in realtime.
