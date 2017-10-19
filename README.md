@@ -28,13 +28,12 @@ We built a global proxy for developers, it works seamlessly with Gravitas. You c
 First, generate a base64 encoded 32 byte encryption key:
 
 ```
-key = SecureRandom.urlsafe_base64(32)
+irb> key = SecureRandom.urlsafe_base64(32)
 ```
 
 Set the key as an environment variable named `GRAVITAS_KEY`.
 
 Run the app with Ruby, `ruby app.rb` (this uses port 4567 by default)
-
 
 Generate encrypted Gravatar parameters.
 ```

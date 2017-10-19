@@ -10,6 +10,7 @@ GEM
       ruby_dep (~> 1.2)
     multipart-post (2.0.0)
     mustermann (1.0.1)
+    puma (3.10.0)
     rack (2.0.3)
     rack-protection (2.0.0)
       rack
@@ -35,6 +36,7 @@ PLATFORMS
 
 DEPENDENCIES
   faraday
+  puma
   rbnacl
   rbnacl-libsodium
   rerun
