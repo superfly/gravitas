@@ -1,1 +1,1 @@
-worker: bundle exec ruby app -s Puma
+worker: bundle exec ruby app.rb -s Puma -p $PORT
