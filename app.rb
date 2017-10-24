@@ -47,7 +47,17 @@ get '/:data' do
   response.write(resp.body)
 end
 
+get '/avatar/:md5' do
+  url = generate_avatar
+  status 301
+  response.headers['Location'] = url
+  url
+end
 post '/avatar/:md5' do
+  generate_avatar
+end
+
+def generate_avatar
   key = request.env["HTTP_AUTHORIZATION"]
   vkey = request.env["HTTP_GRAVITAS_KEY"]
   vkey = default_key if vkey.nil? || vkey == ""
@@ -63,7 +73,16 @@ post '/avatar/:md5' do
 
   box = secure_box(key)
 
-  Base64.urlsafe_encode64(box.encrypt(path)).sub(/=+$/, '')
+  param = Base64.urlsafe_encode64(box.encrypt(path)).sub(/=+$/, '')
+  base_path = request.env['HTTP_X_FORWARDED_URI']
+  if base_path && base_path != ""
+    puts base_path
+    pattern = /\A(.*)#{Regexp.escape("/avatar/#{params[:md5]}")}.*\z/i
+    puts pattern.inspect
+    base_path = base_path.sub(pattern, '\1')
+  end
+
+  request.scheme + "://#{request.host}#{base_path}/#{param}"
 end
 
 def secure_box(key)
