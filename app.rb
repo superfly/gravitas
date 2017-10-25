@@ -58,6 +58,11 @@ post '/avatar/:md5' do
   generate_avatar
 end
 
+error do
+  status 500
+  "clowns are super creepy"
+end
+
 def generate_avatar
   key = request.env["HTTP_AUTHORIZATION"]
   vkey = request.env["HTTP_GRAVITAS_KEY"]
