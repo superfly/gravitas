@@ -18,6 +18,7 @@ get '/:data' do
          end
 
   gravatar_path = secure_box(key).decrypt(data)
+  gravatar_path = "/" + gravatar_path if gravatar_path[0] != '/'
 
   gravatar = "https://www.gravatar.com/avatar#{gravatar_path}"
   puts "GET: #{gravatar_path}"
@@ -76,9 +77,7 @@ def generate_avatar
   param = Base64.urlsafe_encode64(box.encrypt(path)).sub(/=+$/, '')
   base_path = request.env['HTTP_X_FORWARDED_URI']
   if base_path && base_path != ""
-    puts base_path
     pattern = /\A(.*)#{Regexp.escape("/avatar/#{params[:md5]}")}.*\z/i
-    puts pattern.inspect
     base_path = base_path.sub(pattern, '\1')
   end
 
