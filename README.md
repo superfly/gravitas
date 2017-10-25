@@ -37,7 +37,12 @@ Run the app with Ruby, `ruby app.rb` (this uses port 4567 by default)
 
 Generate encrypted Gravatar parameters.
 ```
-curl -X POST -d '' -H 'Authorization: <key>' http://localhost:4567/avatar/767fc9c115a1b989744c755db47feb60?s=132
+curl -H 'Authorization: <key>' http://localhost:4567/avatar/767fc9c115a1b989744c755db47feb60?s=132
+```
+
+Generate from email address (and other gravatar parameters)
+```
+curl -H 'Authorization: <key>' -X POST -d 'email=test@test.com&s=132' http://localhost:4567/avatar
 ```
 
 ### Caveats
